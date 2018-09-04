@@ -1,0 +1,32 @@
+{
+  "componentFolderName": "blocks",
+  "projectPaths": {
+    "src": "./src",
+    "dest": "./dist"
+  },
+  "styles": {
+    "type": "sass",
+    "types": "{scss,sass}",
+    "files": "**/*",
+    "paths": {
+      "src": "sass",
+      "dest": "css"
+    }
+  },
+  "js": {
+    "type": "js",
+    "files": "**/*",
+    "paths": {
+      "src": "js",
+      "dest": "js"
+    }
+  },
+  "tpl": {
+    "type": "pug",
+    "files": "**/*",
+    "paths": {
+      "src": "pug",
+      "dest": ""
+    }
+  }
+}

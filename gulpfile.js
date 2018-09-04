@@ -20,11 +20,11 @@ const messages = {
     compressed: "File: <%= file.relative %> is compressed!",
     deleted: "Old file(folder): <%= file.relative %> is deleted!"
   },
-  notifyHandler = (message) => {
+  notifyHandler = (message, auto = true) => {
     return {
       title: `${pack.name}@${pack.version}`,
       icon: path.join(__dirname, 'gulp.png'),
-      message: messages[message]
+      message: auto ? messages[message] : message
     }
   },
   getTask = (task, arg) => {

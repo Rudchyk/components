@@ -25,11 +25,9 @@ const component = {
   },
   fileTemplate: function(type) {
     let tpl = this.data.configuration[type].type;
-
     if (type === 'styles' && tpl !== 'sass') {
       tpl = 'css';
     }
-
     return `./templates/${type}/tpl.${tpl}`;
   },
   createFile: function(types) {
@@ -39,7 +37,7 @@ const component = {
           return console.log(err);
         } else {
           this.file(this.fileName(type), this.fileContent(data), { src: true })
-            .pipe(this.notify(this.data.notifyHandler('created')))
+            .pipe(this.notify(this.data.notifyHandler(`File: ${this.filePath(type)}<%= file.relative %> is created`, false)))
             .pipe(this.gulp.dest(this.filePath(type)));
         }
       });

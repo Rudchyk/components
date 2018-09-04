@@ -4,6 +4,7 @@
 // Dependencies
 // -----------------------------------------------------------------------------
 const pack = require('./package.json'),
+  configuration = require('./configuration.json'),
   path  = require('path'),
   gulp = require('gulp'),
   argv = require('yargs').argv;
@@ -15,7 +16,7 @@ const messages = {
     error: "Error: <%= error.message %>",
     compiled: "<%= file.relative %> is compited!",
     moved: "File: <%= file.relative %> is moved!",
-    created: "File: <%= file.relative %> is created in <%= file.path %>!",
+    created: "File: <%= file.relative %> is created!",
     compressed: "File: <%= file.relative %> is compressed!",
     deleted: "Old file(folder): <%= file.relative %> is deleted!"
   },
@@ -29,6 +30,7 @@ const messages = {
   getTask = (task, arg) => {
     return require('./gulp-tasks/' + task)({
       pack,
+      configuration,
       notifyHandler,
       arg
     });
@@ -37,7 +39,7 @@ const messages = {
 // -----------------------------------------------------------------------------
 // Tasks
 // -----------------------------------------------------------------------------
-gulp.task('block', getTask('component', argv.n)); // gulp block -n name
+gulp.task('block', getTask('component', argv.b)); // gulp block -b name
 
 // -----------------------------------------------------------------------------
 // Default task

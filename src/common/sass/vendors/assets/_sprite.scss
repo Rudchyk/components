@@ -1,0 +1,72 @@
+.sprite-icon {
+    font-size: 16px;
+    &:before {
+      content:' ';
+      vertical-align:middle;
+      display: inline-block;
+      background-image: url("./media/sprite.svg");
+      background-repeat: no-repeat;
+      background-size: 2.125em 7.875em;
+
+      .no-svg & {
+        background-image: url("./media/sprite.png");
+      }
+    }
+}
+
+
+
+
+.sprite-icon.sprite-icon--arrow_bottom {
+  &:before {
+      background-position: -0.625em -0.625em;
+      width: 0.875em;
+      height: 0.5625em;
+    }
+  }
+
+  @mixin sprite-icon-sprite-icon--arrow_bottom(){
+    @extend .sprite-icon--arrow_bottom;
+  }
+
+
+.sprite-icon.sprite-icon--arrow_left {
+  &:before {
+      background-position: -0.625em -2.4375em;
+      width: 0.5625em;
+      height: 0.875em;
+    }
+  }
+
+  @mixin sprite-icon-sprite-icon--arrow_left(){
+    @extend .sprite-icon--arrow_left;
+  }
+
+
+.sprite-icon.sprite-icon--arrow_right {
+  &:before {
+      background-position: -0.625em -4.5625em;
+      width: 0.5625em;
+      height: 0.875em;
+    }
+  }
+
+  @mixin sprite-icon-sprite-icon--arrow_right(){
+    @extend .sprite-icon--arrow_right;
+  }
+
+
+.sprite-icon.sprite-icon--arrow_top {
+  &:before {
+      background-position: -0.625em -6.6875em;
+      width: 0.875em;
+      height: 0.5625em;
+    }
+  }
+
+  @mixin sprite-icon-sprite-icon--arrow_top(){
+    @extend .sprite-icon--arrow_top;
+  }
+
+
+

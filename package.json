@@ -1,0 +1,49 @@
+{
+  "name": "components",
+  "version": "1.0.0",
+  "description": "",
+  "main": "gulpfile.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "gulp-file": "^0.4.0",
+    "gulp-notify": "^3.2.0",
+    "yargs": "^12.0.1"
+  },
+  "configuration": {
+    "componentFolderName": "blocks",
+    "projectPaths": {
+      "src": "./web/webroot/WEB-INF",
+      "dest": "./web/webroot"
+    },
+    "styles": {
+      "type": "sass",
+      "types": "{scss,sass}",
+      "files": "**/*",
+      "paths": {
+        "src": "_ui-src/responsive/lib/ybase-0.1.0/less",
+        "dest": "_ui/responsive/theme-lambda/css"
+      }
+    },
+    "js": {
+      "type": "js",
+      "files": "**/*",
+      "paths": {
+        "src": "_ui-src/responsive/lib/ybase-0.1.0/js",
+        "dest": "_ui/responsive/common/js"
+      }
+    },
+    "tpl": {
+      "type": "tag",
+      "files": "**/*",
+      "paths": {
+        "src": "tags/responsive",
+        "dest": "tags/responsive"
+      }
+    }
+  }
+}

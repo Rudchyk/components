@@ -28,7 +28,7 @@ const messages = {
     }
   },
   getTask = (task, arg) => {
-    return require('./gulp-tasks/' + task)({
+    return require('./settings/gulp-tasks/' + task)({
       pack,
       configuration,
       notifyHandler,

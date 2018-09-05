@@ -28,5 +28,13 @@
       "src": "pug",
       "dest": ""
     }
+  },
+  "vue": {
+    "type": "vue",
+    "files": "**/*",
+    "paths": {
+      "src": "js/vue",
+      "dest": "js"
+    }
   }
 }

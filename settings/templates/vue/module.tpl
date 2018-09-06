@@ -1,1 +1,1 @@
-import {{name}} from '{{path}}'
+import {{name}} from '{{path}}';

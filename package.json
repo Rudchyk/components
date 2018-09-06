@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "execall": "^1.0.0",
     "gulp": "^3.9.1",
     "gulp-callback": "0.0.3",
     "gulp-file": "^0.4.0",

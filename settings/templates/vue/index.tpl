@@ -3,14 +3,12 @@
 </template>
 
 <script>
-//inject:vue
-//endinject:vue
+//<--inject:string
 
 export default {
   name: 'app',
   components: {
-    //inject:name
-    //endinject:name
+    //<--inject:name
   }
 }
 </script>

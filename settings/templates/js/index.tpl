@@ -1,2 +1,1 @@
-//inject
-//endinject
+//<--inject:string

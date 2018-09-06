@@ -4,37 +4,37 @@ const component = {
   file: require('gulp-file'),
   notify: require('gulp-notify'),
   gcallback: require('gulp-callback'),
+  execall: require('execall'), //???
   fs: require('fs'),
+  init: false,
   toTitleCase: (str) => {
     return str[0].toUpperCase() + str.substr(1);
   },
   componentName: function(taskType) {
+    let name = `${this.data.arg}.${this.data.configuration[taskType].type}`;
     switch (taskType) {
       case 'js':
-        return `acc.${this.data.arg}.js`;
+        return `acc.${name}`;
       case 'styles':
-        return `_${this.data.arg}.${this.data.configuration.styles.type}`;
+        return `_${name}`;
       case 'tpl':
-        return `${this.data.arg}.${this.data.configuration.tpl.type}`;
+        return name;
       case 'vue':
-        return this.toTitleCase(`${this.data.arg}.${this.data.configuration.tpl.type}`);
+        return this.toTitleCase(name);
     }
   },
   modifyFileContent: function(data) {
-    const re = /{{name}}/gi;
-    return data.replace(re, this.data.arg);
+    return data.replace(/{{name}}/gi, this.data.arg);
   },
   indexFileAction: function(data) {
-    this.fs.stat(data.indexFullPath, (err, stat) => {
+    this.fs.stat(data.indexFullPath, err => {
       if(err == null) {
         this.modifyIndexFile(data);
       } else if(err.code == 'ENOENT') {
-        console.log(`${data.indexFullPath} does not exist!`);
         this.createIndexFile(data, () => {
+          this.init = true;
           this.modifyIndexFile(data);
         });
-      } else {
-        console.log('Some other error: ', err.code);
       }
     });
   },
@@ -49,70 +49,82 @@ const component = {
     });
   },
   modifyIndexFile: function(data) {
+    let modifiedModuleContent, modifiedIndexContent;
     this.fs.readFile(data.moduleTpl, 'utf8', (err, moduleContent) => {
-      this.fs.readFile(data.indexFullPath, (err, indexContent) => {
-        let modifiedIndexContent = this.modifyIndexContent(this.modifyModuleContent(moduleContent), indexContent, data.taskType);
+      this.fs.readFile(data.indexFullPath, 'utf8', (err, indexContent) => {
+        modifiedModuleContent = this.modifyModuleContent(moduleContent, data.taskType);
+        modifiedIndexContent = this.modifyIndexContent(modifiedModuleContent, indexContent, data.taskType);
         this.fs.writeFileSync(data.indexFullPath, modifiedIndexContent, 'utf8');
-        console.log(`${data.indexName} has been saved!`);
+        console.log(`${data.indexName} is updated!`);
       });
     });
   },
-  modifyModuleContent: function(tplContent) {
-    const re = /{{path}}/gi,
-      componentPath = `${this.data.configuration.componentFolderName}/${this.data.arg}`;
-    return tplContent.replace(re, componentPath);
-  },
-  modifyIndexContent: function(moduleContent, indexContent, fileType) {
-    let re = this.specifyInjectArea(fileType);
-    console.log('re', re);
-    return indexContent + moduleContent;
-  },
-  specifyInjectArea: function(taskType) {
-    let keyWords = ['inject', 'endinject'];
-
-    switch (taskType) {
+  modifyModuleContent: function(tplContent, fileType) {
+    let componentName, componentPath;
+    switch (fileType) {
       case 'js':
-        keyWords = this.createFlag(keyWords, '//{{mask}}');
+        componentName = `acc.${this.data.arg}.js`;
         break;
-      case 'styles':
-        keyWords = this.createFlag(keyWords, '/* {{mask}} */');
-        break;
-      case 'vue':
-        keyWords = this.createFlag(keyWords, '//{{mask}}:{{flag}}');
+      default:
+        componentName = this.data.arg;
         break;
     }
-
-    return [keyWords[0], '(.*?)', keyWords[1]];
+    componentPath = `${this.data.configuration.componentFolderName}/${componentName}`;
+    return tplContent.replace(/{{path}}/gi, componentPath);
   },
-  createFlag: function (arr, mask) {
-    const re = /{{mask}}/gi;
-    return arr.map((item) => {
-      return mask.replace(re, item);
-    });
+  modifyIndexContent: function(moduleContent, indexContent, fileType) {
+    const flags = this.specifyInjectArea(fileType);
+    let moduleContentNew,
+      indexContentNew = indexContent;
+    for (var flag in flags) {
+      switch (flag) {
+        case 'name':
+          moduleContentNew = `${this.init ? '' : ', '}${this.toTitleCase(this.data.arg)}${flags[flag]}`;
+          break;
+        default:
+          moduleContentNew = `${flags[flag]}\n${moduleContent}`;
+          break;
+      }
+      indexContentNew = indexContentNew.replace(flags[flag], moduleContentNew);
+    }
+    
+    return indexContentNew;
+  },
+  specifyInjectArea: function(taskType) {
+    const keyWord = '<--inject',
+      injects = {};
+    switch (taskType) {
+      case 'js':
+        injects.string = `//${keyWord}:string`;
+        break;
+      case 'styles':
+        injects.string = `/*${keyWord}:string*/`;
+        break;
+      case 'vue':
+        injects.string = `//${keyWord}:string`;
+        injects.name = `//${keyWord}:name`;
+        break;
+    }
+    return injects;
   },
   createComponentsFile: function(taskTypes) {
     const config = this.data.configuration;
-
     taskTypes.forEach(taskType => {
       const indexFile = config[taskType].index;
       let indexPath, intexTplRootPath, componentDestPath;
-
       this.fs.readFile(`${this.tplRootPath(taskType)}/tpl.tpl`, 'utf8', (err, data) => {
         if (err) {
           return console.log(err);
         } else {
           componentDestPath = `${config.projectPaths.src}/${config[taskType].paths.src}/${config.componentFolderName}/`;
-
           this.file(this.componentName(taskType), this.modifyFileContent(data), { src: true })
             .pipe(this.notify(this.data.notifyHandler(`File: ${componentDestPath}<%= file.relative %> is created`, false)))
             .pipe(this.gulp.dest(componentDestPath));
         }
       });
-
       if (indexFile) {
         indexPath = `${config.projectPaths.src}/${config[taskType].paths.index || config[taskType].paths.src}/`;
         intexTplRootPath = this.tplRootPath(taskType);
-
         this.indexFileAction({
           taskType,
           fileType: config[taskType].type,
@@ -128,15 +140,12 @@ const component = {
   tplRootPath: function(taskType) {
     const type = this.data.configuration[taskType].type;
     let tplRootPath = `./settings/templates/${taskType}`;
-
     if (type !== taskType) {
       tplRootPath += `/${type}`;
     }
-
     return tplRootPath;
   }
 };
-
 module.exports = function (data) {
   return () => {
     component.data = data;
